@@ -1,0 +1,40 @@
+name: cerberus-branch-check
+
+# Cerberus consumes a narrow subtree of opentelemetry-collector-contrib (the
+# ClickHouse exporter's sqltemplates package, hoisted to a public location
+# in this branch). This workflow runs on every push to the long-lived
+# `cerberus-ddl` branch and confirms the subtree still builds + tests pass
+# after a rebase.
+#
+# The rest of the collector-contrib tree is irrelevant to cerberus; we
+# deliberately do not run the full upstream test matrix. The collector-contrib
+# repo uses a per-subdirectory module layout, so commands run inside the
+# clickhouseexporter module directory.
+
+on:
+  push:
+    branches:
+      - cerberus-ddl
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  subtree-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: exporter/clickhouseexporter
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: exporter/clickhouseexporter/go.mod
+          cache: true
+      - name: Build sqltemplates subtree
+        run: |
+          go build ./sqltemplates/... ./internal/sqltemplates/...
+      - name: Test sqltemplates subtree
+        run: |
+          go test -count=1 ./sqltemplates/... ./internal/sqltemplates/...
