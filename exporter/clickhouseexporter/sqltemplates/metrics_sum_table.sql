@@ -33,5 +33,5 @@ CREATE TABLE IF NOT EXISTS "%s"."%s" %s (
     ) ENGINE = %s
     %s
     PARTITION BY toDate(TimeUnix)
-    ORDER BY (ServiceName, MetricName, Attributes, toUnixTimestamp64Nano(TimeUnix))
+    ORDER BY (MetricName, Attributes, ServiceName, toUnixTimestamp64Nano(TimeUnix))
     SETTINGS index_granularity=8192, ttl_only_drop_parts = 1
