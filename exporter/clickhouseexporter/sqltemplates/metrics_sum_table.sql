@@ -34,5 +34,5 @@ CREATE TABLE IF NOT EXISTS "%s"."%s" %s (
     ) ENGINE = %s
     %s
     PARTITION BY toDate(TimeUnix)
-    ORDER BY (ServiceName, MetricName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix)
+    ORDER BY (MetricName, ServiceName, toStartOfHour(TimeUnix), cityHash64(Attributes), TimeUnix)
     SETTINGS index_granularity=8192, ttl_only_drop_parts = 1
